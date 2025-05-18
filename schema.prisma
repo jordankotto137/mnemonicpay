@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String?   @unique
+  name           String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  // Account balance for prefunded accounts
+  balance        Float     @default(0)
+  
+  // Relationships
+  phrases        Phrase[]  // Phrases created by this user
+  transactions   Transaction[] // Transactions associated with this user
+}
+
+model Phrase {
+  id             String    @id @default(cuid())
+  phrase         String    @unique
+  amount         Float
+  status         String    @default("unredeemed") // unredeemed, redeemed
+  shareToken     String    @unique @default(cuid())
+  createdAt      DateTime  @default(now())
+  redeemedAt     DateTime?
+  
+  // Relationships
+  createdBy      String?   // User ID of creator (optional)
+  creator        User?     @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  transactions   Transaction[]
+  
+  // Bitcoin seed phrase metadata (for audit/security)
+  seedPhraseHash String?   // Hash of the original seed phrase (for verification)
+  selectionSalt  String?   // Salt used in the selection process
+}
+
+model Transaction {
+  id                String    @id @default(cuid())
+  amount            Float
+  status            String    @default("pending") // pending, completed, failed
+  paymentProvider   String    @default("stripe")
+  paymentId         String?   // External payment ID
+  createdAt         DateTime  @default(now())
+  completedAt       DateTime?
+  
+  // Card information (masked for security)
+  recipientCardLast4 String?
+  
+  // Relationships
+  phraseId         String
+  phrase           Phrase    @relation(fields: [phraseId], references: [id])
+  
+  // User relationship (optional - for account holders)
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Recipient information
+  recipientName    String?
+  recipientEmail   String?
+}
+
+// For tracking activity and audit logs
+model ActivityLog {
+  id              String    @id @default(cuid())
+  action          String    // create_phrase, redeem_phrase, fund_account, etc.
+  details         String?   // JSON string with additional details
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime  @default(now())
+  
+  // Associated entities (optional)
+  userId          String?
+  phraseId        String?
+  transactionId   String?
+}

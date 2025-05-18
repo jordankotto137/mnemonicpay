@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Processing Payment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h2 class="text-center">Processing Your Payment</h2>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                
+                <h3>Your payment is being processed</h3>
+                <p class="lead">Please wait while we complete your transaction.</p>
+                <p>This may take a few moments. Do not close this page.</p>
+                
+                <div class="alert alert-light border mt-4">
+                    <p><strong>Transaction Details:</strong></p>
+                    <p>Amount: ${{ "%.2f"|format(phrase.amount) }}</p>
+                    <p class="mb-0">Payment ID: {{ payment_id }}</p>
+                </div>
+                
+                <div class="mt-4">
+                    <p>This page will automatically refresh in <span id="countdown">30</span> seconds...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Countdown timer
+    var seconds = 30;
+    var countdownElement = document.getElementById('countdown');
+    
+    function updateCountdown() {
+        seconds--;
+        countdownElement.textContent = seconds;
+        
+        if (seconds <= 0) {
+            // Refresh the page
+            location.reload();
+        } else {
+            setTimeout(updateCountdown, 1000);
+        }
+    }
+    
+    // Start countdown
+    setTimeout(updateCountdown, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Redeem Your Mnemonic Phrase{% endblock %}
+
+{% block extra_head %}
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  .StripeElement {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+  }
+  .StripeElement--focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  .StripeElement--invalid {
+    border-color: #dc3545;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Redeem Your Money</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <p><strong>Phrase:</strong> {{ phrase.phrase }}</p>
+                    <p class="mb-0"><strong>Amount:</strong> ${{ "%.2f"|format(phrase.amount) }}</p>
+                    {% if phrase.created_by %}
+                    <p class="mb-0"><strong>From:</strong> {{ phrase.created_by }}</p>
+                    {% endif %}
+                </div>
+                
+                <p class="mb-4">Enter your details below to receive the money on your debit card.</p>
+                
+                <form id="payment-form" method="POST" action="{{ url_for('redemption.process_redemption') }}">
+                    <input type="hidden" name="token" value="{{ phrase.share_token }}">
+                    
+                    <div class="mb-3">
+                        <label for="recipient_name" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="recipient_name" name="recipient_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="card-element" class="form-label">Debit Card Information</label>
+                        <div id="card-element" class="form-control">
+                            <!-- Stripe Card Element will be inserted here -->
+                        </div>
+                        <div id="card-errors" class="invalid-feedback d-block" role="alert"></div>
+                        <div class="form-text">Your card information is securely processed by Stripe.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button id="submit-button" type="submit" class="btn btn-success">Redeem ${{ "%.2f"|format(phrase.amount) }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Create a Stripe client
+  var stripe = Stripe('{{ stripe_key }}');
+  var elements = stripe.elements();
+  
+  // Create an instance of the card Element
+  var card = elements.create('card', {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#495057',
+        fontFamily: 'Arial, sans-serif',
+      }
+    }
+  });
+  
+  // Add an instance of the card Element into the `card-element` div
+  card.mount('#card-element');
+  
+  // Handle real-time validation errors from the card Element
+  card.on('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+  
+  // Handle form submission
+  var form = document.getElementById('payment-form');
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    var submitButton = document.getElementById('submit-button');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Processing...';
+    
+    stripe.createToken(card).then(function(result) {
+      if (result.error) {
+        // Inform the user if there was an error
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+        submitButton.disabled = false;
+        submitButton.textContent = 'Redeem ${{ "%.2f"|format(phrase.amount) }}';
+      } else {
+        // Send the token to your server
+        stripeTokenHandler(result.token);
+      }
+    });
+  });
+  
+  // Submit the form with the token ID
+  function stripeTokenHandler(token) {
+    var form = document.getElementById('payment-form');
+    var hiddenInput = document.createElement('input');
+    hiddenInput.setAttribute('type', 'hidden');
+    hiddenInput.setAttribute('name', 'stripeToken');
+    hiddenInput.setAttribute('value', token.id);
+    form.appendChild(hiddenInput);
+    
+    // Submit the form
+    form.submit();
+  }
+</script>
+{% endblock %}

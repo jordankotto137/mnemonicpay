@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}About Mnemonic Pay{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">About Mnemonic Pay</h2>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-4">A simple way to share money with family</h4>
+                
+                <p>Mnemonic Pay was created to make it easy for family members to share money without the complexity of traditional banking apps. It's like a digital version of handing someone cash, but with the convenience of sending it directly to their debit card.</p>
+                
+                <p>Our system uses memorable 4-word phrases instead of long account numbers or complicated payment links. These phrases are easy to write down, share verbally, or send in a message.</p>
+                
+                <h5 class="mt-4">Why use Mnemonic Pay?</h5>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">Simple & Memorable</h6>
+                                <p class="card-text">4-word phrases are easier to remember and share than 16-digit numbers or complex links.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">No Account Required</h6>
+                                <p class="card-text">Recipients don't need to create an account or download an app to receive money.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">Instant Transfers</h6>
+                                <p class="card-text">Money is sent directly to the recipient's debit card within seconds.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">Secure & Private</h6>
+                                <p class="card-text">Each phrase can only be used once and all payments are processed securely through Stripe.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4">Perfect for:</h5>
+                <ul>
+                    <li>Sending money to family members who aren't tech-savvy</li>
+                    <li>Giving cash gifts for birthdays or holidays</li>
+                    <li>Helping out with emergency expenses</li>
+                    <li>Sharing money when you can't meet in person</li>
+                </ul>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('main.how_it_works') }}" class="btn btn-info">Learn How It Works</a>
+                    <a href="{{ url_for('phrase.create_phrase') }}" class="btn btn-primary">Create a Phrase</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

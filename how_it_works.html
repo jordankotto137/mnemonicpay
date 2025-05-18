@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">How Mnemonic Pay Works</h2>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-4">Send money to family members with simple 4-word phrases</h4>
+                
+                <div class="row mb-5">
+                    <div class="col-md-4 text-center mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">1. Create</h5>
+                                <p class="card-text">Create a unique 4-word phrase and assign a dollar amount.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">2. Share</h5>
+                                <p class="card-text">Write down the phrase and give it to your family member.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">3. Redeem</h5>
+                                <p class="card-text">They enter the phrase and get money sent to their debit card.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4>Detailed Steps</h4>
+                
+                <div class="mb-4">
+                    <h5>For Senders:</h5>
+                    <ol>
+                        <li>Click "Create Phrase" on the homepage</li>
+                        <li>Enter the amount you want to send (minimum $1.00)</li>
+                        <li>Optionally enter your name so the recipient knows who sent it</li>
+                        <li>Click "Generate Phrase" to create your unique 4-word phrase</li>
+                        <li>Write down the phrase on a piece of paper</li>
+                        <li>Give the paper to your family member</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>For Recipients:</h5>
+                    <ol>
+                        <li>Click "Redeem Phrase" on the homepage</li>
+                        <li>Enter the 4-word phrase exactly as written</li>
+                        <li>Enter your name and debit card information</li>
+                        <li>Click "Redeem" to receive the money on your debit card</li>
+                        <li>The money will be transferred instantly to your card</li>
+                    </ol>
+                </div>
+                
+                <div class="alert alert-info mt-4">
+                    <h5>Important Notes:</h5>
+                    <ul>
+                        <li>Each phrase can only be redeemed once</li>
+                        <li>Phrases are case-insensitive, but must be entered exactly as created</li>
+                        <li>No account creation is required to redeem a phrase</li>
+                        <li>All transactions are processed securely through Stripe</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('phrase.create_phrase') }}" class="btn btn-primary">Create a Phrase</a>
+                    <a href="{{ url_for('redemption.manual_redeem') }}" class="btn btn-success">Redeem a Phrase</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
