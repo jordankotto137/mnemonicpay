@@ -1,98 +1,84 @@
-# Mnemonic Pay - Family Cash Transfer System
+# PhoneScribe - Voice Notes Made Simple
 
-A simple Flask application that allows users to send monetary value through unique 4-word mnemonic phrases (e.g., 'apple banana orange grape'), which recipients can redeem instantly for cash to their debit card.
+PhoneScribe allows users to call a single phone number, leave voice notes, and receive both AI-transcribed text and audio files via SMS.
 
 ## Features
 
-- **Phrase Generation**: Generate unique 4-word phrases using a predefined wordlist
-- **Value Assignment**: Enable the sender to specify a monetary value (e.g., $10) to associate with the phrase
-- **Data Storage**: Store each phrase, its associated value, and redemption status in an SQLite database
-- **Secure Sharing**: Generate a unique link for the sender to share the phrase securely with the recipient
-- **Redemption Interface**: Simple web form where recipients can enter the phrase and their debit card details to claim the value
-- **Payment Integration**: Integration with Stripe to transfer the specified value to the recipient's debit card
-- **Single-Use Security**: Each phrase is unique and can only be redeemed once
-- **No Account Required**: Recipients can redeem the value without creating an account
+- 📞 Single shared phone number for all users
+- 🔐 Secure caller verification system
+- 🤖 AI-powered transcription using OpenAI Whisper
+- 📱 SMS delivery of notes and audio files
+- 🌐 Web dashboard for note management
+- 🔒 Secure authentication and data storage
 
 ## Setup Instructions
 
-### Prerequisites
+### 1. Environment Variables
 
-- Python 3.6+
-- Flask
-- SQLAlchemy
-- Stripe account with API keys
+Copy `.env.example` to `.env.local` and fill in your credentials:
 
-### Installation
+\`\`\`bash
+cp .env.example .env.local
+\`\`\`
 
-1. Clone the repository:
-```
-git clone https://github.com/yourusername/mnemonic-pay.git
-cd mnemonic-pay
-```
+### 2. Supabase Setup
 
-2. Install dependencies:
-```
-pip install flask flask-sqlalchemy flask-wtf stripe python-dotenv
-```
+1. Create a new Supabase project
+2. Copy your project URL and anon key to `.env.local`
+3. Run the database setup:
 
-3. Create a `.env` file in the root directory with your Stripe API keys:
-```
-SECRET_KEY=your_secret_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_key
-```
+\`\`\`bash
+npm run db:setup
+\`\`\`
 
-4. Initialize the database:
-```
-python setup_db.py
-```
+### 3. Twilio Setup
 
-5. Run the application:
-```
-python run.py
-```
+1. Create a Twilio account
+2. Purchase a phone number
+3. Set up webhooks:
+   - Voice URL: `https://your-domain.com/api/twilio/voice`
+   - Recording Status Callback: `https://your-domain.com/api/twilio/recording-status`
+4. Add your Twilio credentials to `.env.local`
 
-6. Access the application at `http://localhost:5000`
+### 4. OpenAI Setup
+
+1. Create an OpenAI account
+2. Generate an API key
+3. Add it to `.env.local`
+
+### 5. Deploy
+
+Deploy to Vercel:
+
+\`\`\`bash
+vercel --prod
+\`\`\`
+
+### 6. Configure Twilio Webhooks
+
+Update your Twilio phone number webhooks to point to your deployed URLs:
+
+- Voice URL: `https://your-domain.vercel.app/api/twilio/voice`
+- Recording Status Callback: `https://your-domain.vercel.app/api/twilio/recording-status`
 
 ## Usage
 
-### For Senders:
+1. Users call your Twilio phone number
+2. First-time callers verify their phone number
+3. Verified users can immediately start recording notes
+4. Notes are transcribed and sent via SMS with audio links
 
-1. Click "Create Phrase" on the homepage
-2. Enter the amount you want to send (minimum $1.00)
-3. Optionally enter your name so the recipient knows who sent it
-4. Click "Generate Phrase" to create your unique 4-word phrase
-5. Write down the phrase on a piece of paper
-6. Give the paper to your family member
+## Development
 
-### For Recipients:
+\`\`\`bash
+npm install
+npm run dev
+\`\`\`
 
-1. Click "Redeem Phrase" on the homepage
-2. Enter the 4-word phrase exactly as written
-3. Enter your name and debit card information
-4. Click "Redeem" to receive the money on your debit card
-5. The money will be transferred instantly to your card
+## Production Considerations
 
-## Security Features
-
-- Rate limiting to prevent brute force attacks
-- CSRF protection for all forms
-- Phrase validation to ensure proper format
-- Amount validation with minimum and maximum limits
-- Secure storage of sensitive information
-- Single-use phrases that can only be redeemed once
-
-## Production Deployment
-
-For production deployment:
-
-1. Update the `.env` file with production Stripe API keys
-2. Set a strong SECRET_KEY in the `.env` file
-3. Configure a production-ready web server (e.g., Gunicorn, uWSGI)
-4. Set up HTTPS with a valid SSL certificate
-5. Configure Stripe webhooks for your production domain
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+- Set up proper error monitoring (e.g., Sentry)
+- Configure rate limiting for API endpoints
+- Set up proper logging and analytics
+- Consider using a CDN for audio file delivery
+- Implement proper backup and disaster recovery
